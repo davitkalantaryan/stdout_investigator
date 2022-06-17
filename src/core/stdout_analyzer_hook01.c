@@ -9,7 +9,7 @@
 #ifdef STDOUT_INVEST_USE_HOOK01
 #if (!defined(_WIN32)) || defined(__INTELICENCE__)
 
-#include <stdout_investigator/investigator01.h>
+#include <stdout_investigator/investigator.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -32,25 +32,34 @@ static void HandleUserStdout(const char* a_buffer, size_t a_unBufferSize );
 static void HandleUserStderr(const char* a_buffer, size_t a_unBufferSize );
 static void SignalFunction(int a_sigNum){CPPUTILS_STATIC_CAST(void,a_sigNum);}
 
-TypeWriter  g_stdoutHandler = &HandleUserStdout;
-TypeWriter  g_stderrHandler = &HandleUserStderr;
-bool        s_shouldStopCallbacks = false;
 
-void StopStdoutInvestManually(void)
-{
-    DestructStdoutInvestigateor();
-}
+STDOUT_INVEST_EXPORT StdoutInvestTypeWriter  g_stdoutInvestStdoutHandler = &HandleUserStdout;
+STDOUT_INVEST_EXPORT StdoutInvestTypeWriter  g_stdoutInvestStderrHandler = &HandleUserStderr;
 
 
-void WriteToStdOut(const char* a_buffer, size_t a_unBufferSize)
+STDOUT_INVEST_EXPORT void StdoutInvestWriteToStdOutNoClbk(const char* a_buffer, size_t a_unBufferSize)
 {
     write(s_stdoutCopy,a_buffer,a_unBufferSize);
 }
 
 
-void WriteToStdError(const char* a_buffer, size_t a_unBufferSize)
+STDOUT_INVEST_EXPORT void StdoutInvestWriteToStdErrNoClbk(const char* a_buffer, size_t a_unBufferSize)
 {
     write(s_stderrCopy,a_buffer,a_unBufferSize);
+}
+
+
+STDOUT_INVEST_EXPORT void StdoutInvestStopCallbacks(void)
+{
+    dup2(s_stdoutCopy,STDOUT_FILENO);
+	dup2(s_stderrCopy,STDERR_FILENO);
+}
+
+
+STDOUT_INVEST_EXPORT void StdoutInvestStartCallbacks(void)
+{
+    dup2(s_vPipesStdOut[1],STDOUT_FILENO);
+	dup2(s_vPipesStdErr[1],STDERR_FILENO);
 }
 
 
@@ -87,23 +96,13 @@ static void* RedirectorThreadFunction(void* a_p_data)
             if (FD_ISSET(s_vPipesStdOut[0], &rfds)){
                 sizeRead = read(s_vPipesStdOut[0],vcBufferToRead,READ_BUFFER_MAX_SIZE);
                 if(sizeRead>0){
-                    if(s_shouldStopCallbacks){
-                        write(s_stdoutCopy,vcBufferToRead,CPPUTILS_STATIC_CAST(size_t,sizeRead));
-                    }
-                    else{
-                        (*g_stdoutHandler)(vcBufferToRead,CPPUTILS_STATIC_CAST(size_t,sizeRead));
-                    }
+                    (*g_stdoutInvestStdoutHandler)(vcBufferToRead,CPPUTILS_STATIC_CAST(size_t,sizeRead));
                 } // if(sizeRead>0){
             } // if (FD_ISSET(s_vPipesStdOut[0], &rfds)){
             if (FD_ISSET(s_vPipesStdErr[0], &rfds)){
                 sizeRead = read(s_vPipesStdErr[0],vcBufferToRead,READ_BUFFER_MAX_SIZE);
                 if(sizeRead>0){
-                    if(s_shouldStopCallbacks){
-                        write(s_stderrCopy,vcBufferToRead,CPPUTILS_STATIC_CAST(size_t,sizeRead));
-                    }
-                    else{
-                        (*g_stderrHandler)(vcBufferToRead,CPPUTILS_STATIC_CAST(size_t,sizeRead));
-                    }
+                    (*g_stdoutInvestStderrHandler)(vcBufferToRead,CPPUTILS_STATIC_CAST(size_t,sizeRead));
                 } // if(sizeRead>0){
             } // if (FD_ISSET(s_vPipesStdErr[0], &rfds)){
         }break;
@@ -117,14 +116,12 @@ static void* RedirectorThreadFunction(void* a_p_data)
 
 static void HandleUserStdout(const char* a_buffer, size_t a_unBufferSize )
 {
-    //dprintf(s_stdoutCopy,"readSize=%d, buffer=%." READ_BUFFER_MAX_SIZE_STR "s", static_cast<int>(a_unBufferSize),static_cast<const char*>(a_buffer) );
     write(s_stdoutCopy,a_buffer,a_unBufferSize);
 }
 
 
 static void HandleUserStderr(const char* a_buffer, size_t a_unBufferSize )
 {
-    //dprintf(s_stderrCopy,"readSize=%d, buffer=%." READ_BUFFER_MAX_SIZE_STR "s", static_cast<int>(a_unBufferSize),static_cast<const char*>(a_buffer) );
     write(s_stderrCopy,a_buffer,a_unBufferSize);
 }
 

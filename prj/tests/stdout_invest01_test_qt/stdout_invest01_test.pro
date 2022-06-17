@@ -1,22 +1,20 @@
 #
-# File crash_investigateor.pro
-# File created : 18 Nov 2021
+# File stdout_invest01_test.pro
+# File created : 17 Jun 2022
 # Created by : Davit Kalantaryan (davit.kalantaryan@desy.de)
-# This file can be used to produce Makefile for daqadcreceiver application
-# for PITZ
-# CONFIG += 2test
-
-#QMAKE_CXXFLAGS += "-include types.h"
-#DEFINES += u_int=unsigned
+# This file can be used to produce Makefile 
+#
 
 #DEFINES += DEBUG_APP
 
 DEFINES += STDOUT_INVEST_USE_HOOK01
+DEFINES += STDOUT_INVEST_USING_STATIC_LIB_OR_OBJECTS
 
 
 win32{
 	QMAKE_CFLAGS += /Wall /WX
 } else {
+	QMAKE_LFLAGS += -pthread
 	QMAKE_CFLAGS += -Wall
 	QMAKE_CFLAGS += -Werror
 	QMAKE_CFLAGS += -Wno-attributes
@@ -25,6 +23,7 @@ win32{
 }
 
 include("$${PWD}/../../common/common_qt/sys_common.pri")
+MAKEFILE = Makefile
 DESTDIR = $${artifactRoot}/$${SYSTEM_PATH}/test
 
 QT -= core
@@ -39,10 +38,7 @@ SOURCES += "$${PWD}/../../../src/tests/other/main_stdout_invest01_test.cpp"
 SOURCES += "$${PWD}/../../../src/core/stdout_analyzer_hook01.c"
 
 HEADERS += \
-	"$${PWD}/../../../src/core/stack_investigator_private_internal.h"	\
 	$$files($${PWD}/../../../include/*.h,true)
 
 OTHER_FILES +=	\
-	"$${PWD}/../../../src/core/analyze/crash_investigator_analyze_leak_only_new_delete.cpp"		\
-	"$${PWD}/../../../contrib/cpputils/src/core/cpputils_hashtbl.cpp"				\
-	"$${PWD}/../../../src/core/analyze/crash_investigator_analyze_leak_only_new_delete_std_hash.cpp"
+	"$${PWD}/../../../contrib/cpputils/src/core/cpputils_hashtbl.cpp"				
