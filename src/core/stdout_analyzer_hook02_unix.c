@@ -96,7 +96,7 @@ int puts(const char* a_cpcString)
 	if(s_stdoutInvestCanRunWriteCallback){
 		const size_t cunReturn = strlen(a_cpcString);
 		(*g_stdoutInvestStdoutHandler)(a_cpcString,cunReturn);
-		return cunReturn;
+        return CPPUTILS_STATIC_CAST(int,cunReturn);
 	}
 	
     return (*s_original_puts)(a_cpcString);
