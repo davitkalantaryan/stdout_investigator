@@ -34,7 +34,7 @@ static void HandleUserStderr(const char* a_buffer, size_t a_unBufferSize );
 
 static Type_puts      s_original_puts   =  CPPUTILS_NULL;
 static Type_fwrite      s_original_fwrite   =  CPPUTILS_NULL;
-bool        s_stdoutInvestCanRunWriteCallback = true;
+static bool        s_stdoutInvestCanRunWriteCallback = true;
 
 
 STDOUT_INVEST_EXPORT StdoutInvestTypeWriter  g_stdoutInvestStdoutHandler = &HandleUserStdout;
