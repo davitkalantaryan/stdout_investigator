@@ -11,8 +11,7 @@
 
 #DEFINES += DEBUG_APP
 
-#DEFINES += CRASH_INVEST_DO_NOT_USE_MAL_FREE
-DEFINES += STACK_INVEST_USING_STATIC_LIB_OR_OBJECTS
+DEFINES += STDOUT_INVEST_USE_HOOK01
 
 
 win32{
@@ -33,14 +32,11 @@ QT -= gui
 CONFIG -= qt
 
 
-SOURCES += "$${PWD}/../../../src/tests/other/main_stack_invest01_test.c"
-
 INCLUDEPATH += $${PWD}/../../../include
 INCLUDEPATH += $${PWD}/../../../contrib/cpputils/include
 
-SOURCES += "$${PWD}/../../../src/core/stack_investigator_backtrace_common.c"
-SOURCES += "$${PWD}/../../../src/core/stack_investigator_backtrace_unix.c"
-SOURCES += "$${PWD}/../../../src/core/stack_investigator_backtrace_windows.c"
+SOURCES += "$${PWD}/../../../src/tests/other/main_stdout_invest01_test.cpp"
+SOURCES += "$${PWD}/../../../src/core/stdout_analyzer_hook01.c"
 
 HEADERS += \
 	"$${PWD}/../../../src/core/stack_investigator_private_internal.h"	\
