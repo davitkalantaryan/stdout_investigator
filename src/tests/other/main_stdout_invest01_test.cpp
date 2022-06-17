@@ -10,15 +10,19 @@
 #include <stdout_investigator/investigator.h>
 
 
-void StdoutInvestigatorStatic(const char* a_pBuffer, size_t a_size)
+static void StdoutInvestigatorStatic(const char* a_pBuffer, size_t a_size)
 {
 	StdoutInvestStopCallbacks();
-	printf("buffLen:%d => ",static_cast<int>(a_size));
+	printf("buffLen:%d => ",static_cast<int>(a_size)); fflush(stdout);
+	StdoutInvestStartCallbacks();
 	StdoutInvestWriteToStdOutNoClbk(a_pBuffer,a_size);
 }
 
 int main(void)
 {
+	printf("press any key and then enter to continue "); fflush(stdout);
+	getchar();
+	g_stdoutInvestStdoutHandler = &StdoutInvestigatorStatic;
 	::std::cout << "Hello world!\n";
 	
 	return 0;
