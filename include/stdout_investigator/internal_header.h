@@ -8,7 +8,7 @@
 #ifndef STDOUT_INVEST_INCLUDE_STDOUT_INVEST_INTERNAL_HEADER_H
 #define STDOUT_INVEST_INCLUDE_STDOUT_INVEST_INTERNAL_HEADER_H
 
-#include <cpputils/internal_header.h>
+#include <cinternal/internal_header.h>
 
 
 #if defined(STDOUT_INVEST_COMPILING_SHARED_LIB)
